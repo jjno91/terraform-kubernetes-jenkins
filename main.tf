@@ -114,7 +114,7 @@ resource "kubernetes_deployment" "this" {
           }
 
           port {
-            container_port = "${var.http_container_port}"
+            container_port = "${var.web_port}"
           }
 
           port {
@@ -161,16 +161,18 @@ resource "kubernetes_service" "this" {
 
     port {
       name        = "http"
-      port        = "${var.http_exposed_port}"
-      target_port = "${var.http_container_port}"
+      port        = "80"
+      target_port = "${var.web_port}"
+      node_port   = "${var.web_node_port}"
     }
 
     port {
       name        = "jnlp"
       port        = "${var.jnlp_port}"
       target_port = "${var.jnlp_port}"
+      node_port   = "${var.jnlp_node_port}"
     }
 
-    type = "LoadBalancer"
+    type = "NodePort"
   }
 }

@@ -23,12 +23,7 @@ variable "labels" {
   default     = []
 }
 
-variable "http_exposed_port" {
-  description = "(optional) Jenkins web port exposed by Kubernetes service"
-  default     = "80"
-}
-
-variable "http_container_port" {
+variable "web_port" {
   description = "(optional) Jenkins web port internal to the Jenkins container"
   default     = "8080"
 }
@@ -36,4 +31,14 @@ variable "http_container_port" {
 variable "jnlp_port" {
   description = "(optional) JNLP port used by Jenkins agents"
   default     = "50000"
+}
+
+variable "web_node_port" {
+  description = "(optional) Jenkins web port internal to the Jenkins container"
+  default     = "30000"
+}
+
+variable "jnlp_node_port" {
+  description = "(optional) JNLP port used by Jenkins agents"
+  default     = "30001"
 }
