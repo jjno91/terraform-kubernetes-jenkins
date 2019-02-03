@@ -17,14 +17,15 @@ resource "kubernetes_cluster_role_binding" "this" {
   }
 
   role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
     name      = "cluster-admin"
+    kind      = "ClusterRole"
+    api_group = "rbac.authorization.k8s.io"
   }
 
   subject {
-    kind      = "ServiceAccount"
     name      = "${kubernetes_service_account.this.metadata.0.name}"
+    kind      = "ServiceAccount"
+    api_group = ""
     namespace = "${kubernetes_namespace.this.metadata.0.name}"
   }
 }
@@ -121,7 +122,7 @@ resource "kubernetes_deployment" "this" {
           }
 
           volume_mount {
-            name       = "jenkins_home"
+            name       = "jenkins-home"
             mount_path = "/var/jenkins_home"
           }
         }
@@ -135,7 +136,7 @@ resource "kubernetes_deployment" "this" {
             claim_name = "${kubernetes_persistent_volume_claim.this.metadata.0.name}"
           }
 
-          name = "jenkins_home"
+          name = "jenkins-home"
         }
 
         service_account_name = "${kubernetes_service_account.this.metadata.0.name}"
@@ -159,11 +160,13 @@ resource "kubernetes_service" "this" {
     }
 
     port {
+      name        = "http"
       port        = "${var.http_exposed_port}"
       target_port = "${var.http_container_port}"
     }
 
     port {
+      name        = "jnlp"
       port        = "${var.jnlp_port}"
       target_port = "${var.jnlp_port}"
     }
