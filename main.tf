@@ -155,7 +155,7 @@ resource "kubernetes_service" "this" {
 
   spec {
     selector {
-      app = "${kubernetes_deployment.this.template.metadata.0.labels.app}"
+      app = "${var.identifier}"
     }
 
     port {
