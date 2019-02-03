@@ -31,8 +31,7 @@ resource "kubernetes_cluster_role_binding" "this" {
 
 resource "kubernetes_storage_class" "this" {
   metadata {
-    name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.name}"
+    name = "${var.identifier}"
   }
 
   parameters {
@@ -45,8 +44,7 @@ resource "kubernetes_storage_class" "this" {
 
 resource "kubernetes_persistent_volume" "this" {
   metadata {
-    name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.name}"
+    name = "${var.identifier}"
   }
 
   spec {
@@ -170,6 +168,6 @@ resource "kubernetes_service" "this" {
       target_port = "${var.jnlp_port}"
     }
 
-    type             = "LoadBalancer"
+    type = "LoadBalancer"
   }
 }
