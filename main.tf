@@ -7,7 +7,7 @@ resource "kubernetes_namespace" "this" {
 resource "kubernetes_service_account" "this" {
   metadata {
     name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.name}"
+    namespace = "${kubernetes_namespace.this.metadata.0.name}"
   }
 }
 
@@ -24,8 +24,8 @@ resource "kubernetes_cluster_role_binding" "this" {
 
   subject {
     kind      = "ServiceAccount"
-    name      = "${kubernetes_service_account.this.name}"
-    namespace = "${kubernetes_namespace.this.name}"
+    name      = "${kubernetes_service_account.this.metadata.0.name}"
+    namespace = "${kubernetes_namespace.this.metadata.0.name}"
   }
 }
 
@@ -59,14 +59,14 @@ resource "kubernetes_persistent_volume" "this" {
     }
 
     access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "${kubernetes_storage_class.this.name}"
+    storage_class_name = "${kubernetes_storage_class.this.metadata.0.name}"
   }
 }
 
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
     name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.name}"
+    namespace = "${kubernetes_namespace.this.metadata.0.name}"
   }
 
   spec {
@@ -77,7 +77,7 @@ resource "kubernetes_persistent_volume_claim" "this" {
     }
 
     access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "${kubernetes_storage_class.this.name}"
+    storage_class_name = "${kubernetes_storage_class.this.metadata.0.name}"
     volume_name        = "${kubernetes_persistent_volume.this.metadata.0.name}"
   }
 }
@@ -85,7 +85,7 @@ resource "kubernetes_persistent_volume_claim" "this" {
 resource "kubernetes_deployment" "this" {
   metadata {
     name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.name}"
+    namespace = "${kubernetes_namespace.this.metadata.0.name}"
   }
 
   spec {
@@ -132,13 +132,13 @@ resource "kubernetes_deployment" "this" {
 
         volume {
           persistent_volume_claim {
-            claim_name = "${kubernetes_persistent_volume_claim.this.name}"
+            claim_name = "${kubernetes_persistent_volume_claim.this.metadata.0.name}"
           }
 
           name = "jenkins_home"
         }
 
-        service_account_name = "${kubernetes_service_account.this.name}"
+        service_account_name = "${kubernetes_service_account.this.metadata.0.name}"
       }
     }
 
@@ -150,7 +150,7 @@ resource "kubernetes_deployment" "this" {
 resource "kubernetes_service" "this" {
   metadata {
     name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.name}"
+    namespace = "${kubernetes_namespace.this.metadata.0.name}"
   }
 
   spec {
