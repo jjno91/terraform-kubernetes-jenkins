@@ -131,6 +131,10 @@ resource "kubernetes_deployment" "this" {
           fs_group = "2000"
         }
 
+        node_selector {
+          "failure-domain.beta.kubernetes.io/zone" = "${var.volume_availability_zone}"
+        }
+
         volume {
           persistent_volume_claim {
             claim_name = "${kubernetes_persistent_volume_claim.this.metadata.0.name}"

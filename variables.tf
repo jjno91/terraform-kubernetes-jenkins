@@ -3,6 +3,11 @@ variable "jenkins_volume_id" {
   default     = ""
 }
 
+variable "volume_availability_zone" {
+  description = "(required) Jenkins must be deployed to the same zone as its persistent data volume"
+  default     = ""
+}
+
 variable "jenkins_volume_size" {
   description = "(required) Jenkins volume size in gigabytes"
   default     = ""
