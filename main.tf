@@ -6,10 +6,11 @@ resource "kubernetes_namespace" "this" {
 
 resource "kubernetes_service_account" "this" {
   metadata {
-    name                            = "${var.identifier}"
-    namespace                       = "${kubernetes_namespace.this.metadata.0.name}"
-    automount_service_account_token = true
+    name      = "${var.identifier}"
+    namespace = "${kubernetes_namespace.this.metadata.0.name}"
   }
+
+  automount_service_account_token = true
 }
 
 resource "kubernetes_cluster_role_binding" "this" {
