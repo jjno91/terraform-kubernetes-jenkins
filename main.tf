@@ -145,7 +145,8 @@ resource "kubernetes_deployment" "this" {
           name = "jenkins-home"
         }
 
-        service_account_name = "${kubernetes_service_account.this.metadata.0.name}"
+        service_account_name            = "${kubernetes_service_account.this.metadata.0.name}"
+        automount_service_account_token = true
       }
     }
 
