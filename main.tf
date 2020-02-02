@@ -1,13 +1,13 @@
 resource "kubernetes_namespace" "this" {
   metadata {
-    name = "${var.identifier}"
+    name = var.identifier
   }
 }
 
 resource "kubernetes_service_account" "this" {
   metadata {
-    name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.metadata.0.name}"
+    name      = var.identifier
+    namespace = kubernetes_namespace.this.metadata[0].name
   }
 
   automount_service_account_token = true
@@ -15,7 +15,7 @@ resource "kubernetes_service_account" "this" {
 
 resource "kubernetes_cluster_role_binding" "this" {
   metadata {
-    name = "${var.identifier}"
+    name = var.identifier
   }
 
   role_ref {
@@ -25,19 +25,19 @@ resource "kubernetes_cluster_role_binding" "this" {
   }
 
   subject {
-    name      = "${kubernetes_service_account.this.metadata.0.name}"
+    name      = kubernetes_service_account.this.metadata[0].name
     kind      = "ServiceAccount"
     api_group = ""
-    namespace = "${kubernetes_namespace.this.metadata.0.name}"
+    namespace = kubernetes_namespace.this.metadata[0].name
   }
 }
 
 resource "kubernetes_storage_class" "this" {
   metadata {
-    name = "${var.identifier}"
+    name = var.identifier
   }
 
-  parameters {
+  parameters = {
     type = "gp2"
   }
 
@@ -47,61 +47,61 @@ resource "kubernetes_storage_class" "this" {
 
 resource "kubernetes_persistent_volume" "this" {
   metadata {
-    name = "${var.identifier}"
+    name = var.identifier
   }
 
   spec {
-    capacity {
+    capacity = {
       storage = "${var.jenkins_volume_size}Gi"
     }
 
     persistent_volume_source {
       aws_elastic_block_store {
-        volume_id = "${var.jenkins_volume_id}"
+        volume_id = var.jenkins_volume_id
       }
     }
 
     access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "${kubernetes_storage_class.this.metadata.0.name}"
+    storage_class_name = kubernetes_storage_class.this.metadata[0].name
   }
 }
 
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
-    name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.metadata.0.name}"
+    name      = var.identifier
+    namespace = kubernetes_namespace.this.metadata[0].name
   }
 
   spec {
     resources {
-      requests {
+      requests = {
         storage = "${var.jenkins_volume_size}Gi"
       }
     }
 
     access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "${kubernetes_storage_class.this.metadata.0.name}"
-    volume_name        = "${kubernetes_persistent_volume.this.metadata.0.name}"
+    storage_class_name = kubernetes_storage_class.this.metadata[0].name
+    volume_name        = kubernetes_persistent_volume.this.metadata[0].name
   }
 }
 
 resource "kubernetes_deployment" "this" {
   metadata {
-    name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.metadata.0.name}"
+    name      = var.identifier
+    namespace = kubernetes_namespace.this.metadata[0].name
   }
 
   spec {
     selector {
-      match_labels {
-        app = "${var.identifier}"
+      match_labels = {
+        app = var.identifier
       }
     }
 
     template {
       metadata {
-        labels {
-          app = "${var.identifier}"
+        labels = {
+          app = var.identifier
         }
       }
 
@@ -116,11 +116,11 @@ resource "kubernetes_deployment" "this" {
           }
 
           port {
-            container_port = "${var.web_port}"
+            container_port = var.web_port
           }
 
           port {
-            container_port = "${var.jnlp_port}"
+            container_port = var.jnlp_port
           }
 
           volume_mount {
@@ -133,19 +133,19 @@ resource "kubernetes_deployment" "this" {
           fs_group = "2000"
         }
 
-        node_selector {
-          "failure-domain.beta.kubernetes.io/zone" = "${var.volume_availability_zone}"
+        node_selector = {
+          "failure-domain.beta.kubernetes.io/zone" = var.volume_availability_zone
         }
 
         volume {
           persistent_volume_claim {
-            claim_name = "${kubernetes_persistent_volume_claim.this.metadata.0.name}"
+            claim_name = kubernetes_persistent_volume_claim.this.metadata[0].name
           }
 
           name = "jenkins-home"
         }
 
-        service_account_name            = "${kubernetes_service_account.this.metadata.0.name}"
+        service_account_name            = kubernetes_service_account.this.metadata[0].name
         automount_service_account_token = true
       }
     }
@@ -157,27 +157,27 @@ resource "kubernetes_deployment" "this" {
 
 resource "kubernetes_service" "this" {
   metadata {
-    name      = "${var.identifier}"
-    namespace = "${kubernetes_namespace.this.metadata.0.name}"
+    name      = var.identifier
+    namespace = kubernetes_namespace.this.metadata[0].name
   }
 
   spec {
-    selector {
-      app = "${var.identifier}"
+    selector = {
+      app = var.identifier
     }
 
     port {
       name        = "http"
       port        = "80"
-      target_port = "${var.web_port}"
-      node_port   = "${var.web_node_port}"
+      target_port = var.web_port
+      node_port   = var.web_node_port
     }
 
     port {
       name        = "jnlp"
-      port        = "${var.jnlp_port}"
-      target_port = "${var.jnlp_port}"
-      node_port   = "${var.jnlp_node_port}"
+      port        = var.jnlp_port
+      target_port = var.jnlp_port
+      node_port   = var.jnlp_node_port
     }
 
     type = "NodePort"
