@@ -13,6 +13,16 @@ variable "jenkins_volume_size" {
   default     = ""
 }
 
+variable "cpu_request" {
+  description = "(optional) https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#cpu - matches m5.2xlarge resources"
+  default     = "8"
+}
+
+variable "memory_request" {
+  description = "(optional) https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#memory - matches m5.2xlarge resources"
+  default     = "31.5Gi"
+}
+
 variable "jenkins_version" {
   description = "(optional) https://hub.docker.com/r/jenkins/jenkins/tags"
   default     = "latest"

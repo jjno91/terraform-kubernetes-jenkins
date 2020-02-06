@@ -110,6 +110,13 @@ resource "kubernetes_deployment" "this" {
           name  = "jenkins"
           image = "jenkins/jenkins:${var.jenkins_version}"
 
+          resources {
+            requests {
+              cpu    = var.cpu_request
+              memory = var.memory_request
+            }
+          }
+
           env {
             name  = "JAVA_OPTS"
             value = "-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=300"
