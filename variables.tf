@@ -15,7 +15,7 @@ variable "jenkins_volume_size" {
 
 variable "cpu_request" {
   description = "(optional) https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#cpu - matches m5.2xlarge resources"
-  default     = "8"
+  default     = "7890m"
 }
 
 variable "memory_request" {

@@ -92,6 +92,10 @@ resource "kubernetes_deployment" "this" {
   }
 
   spec {
+    strategy {
+      type = "Recreate"
+    }
+
     selector {
       match_labels = {
         app = var.identifier
