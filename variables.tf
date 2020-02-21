@@ -1,26 +1,21 @@
 variable "jenkins_volume_id" {
   description = "(Required) Jenkins persists its data on disk and needs a static EBS volume ID in order to maintain state"
-  default     = ""
 }
 
 variable "volume_availability_zone" {
   description = "(Required) Jenkins must be deployed to the same zone as its persistent data volume"
-  default     = ""
 }
 
 variable "jenkins_volume_size" {
   description = "(Required) Jenkins volume size in gigabytes"
-  default     = ""
 }
 
 variable "certificate_arn" {
   description = "(Required) ACM certificate used to secure HTTPS access"
-  default     = "30001"
 }
 
 variable "host" {
   description = "(Required) https://www.terraform.io/docs/providers/kubernetes/r/ingress.html#host"
-  default     = "30001"
 }
 
 variable "cpu_request" {
