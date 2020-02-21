@@ -194,3 +194,40 @@ resource "kubernetes_service" "this" {
     type = "NodePort"
   }
 }
+
+resource "kubernetes_ingress" "this" {
+  metadata {
+    name      = var.identifier
+    namespace = kubernetes_namespace.this.metadata[0].name
+
+    annotations = {
+      "kubernetes.io/ingress.class"                    = "alb"
+      "alb.ingress.kubernetes.io/scheme"               = "internet-facing"
+      "alb.ingress.kubernetes.io/certificate-arn"      = var.certificate_arn
+      "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+      "alb.ingress.kubernetes.io/actions.ssl-redirect" = "{\"Type\": \"redirect\", \"RedirectConfig\": { \"Protocol\": \"HTTPS\", \"Port\": \"443\", \"StatusCode\": \"HTTP_301\"}}"
+    }
+  }
+
+  spec {
+    backend {
+      service_name = kubernetes_service.this.metadata[0].name
+      service_port = var.web_port
+    }
+
+    rule {
+      host = var.host
+
+      http {
+        path {
+          path = "/*"
+
+          backend {
+            service_name = kubernetes_service.this.metadata[0].name
+            service_port = var.web_port
+          }
+        }
+      }
+    }
+  }
+}
