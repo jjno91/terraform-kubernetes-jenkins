@@ -212,7 +212,7 @@ resource "kubernetes_ingress" "this" {
   spec {
     backend {
       service_name = kubernetes_service.this.metadata[0].name
-      service_port = var.web_port
+      service_port = "80"
     }
 
     rule {
@@ -224,7 +224,7 @@ resource "kubernetes_ingress" "this" {
 
           backend {
             service_name = kubernetes_service.this.metadata[0].name
-            service_port = var.web_port
+            service_port = "80"
           }
         }
       }
