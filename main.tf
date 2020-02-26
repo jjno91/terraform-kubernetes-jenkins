@@ -173,6 +173,8 @@ resource "kubernetes_service" "this" {
   }
 
   spec {
+    type = "NodePort"
+    
     selector = {
       app = var.identifier
     }
