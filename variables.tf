@@ -10,10 +10,6 @@ variable "jenkins_volume_size" {
   description = "(Required) Jenkins volume size in gigabytes"
 }
 
-variable "certificate_arn" {
-  description = "(Required) ACM certificate used to secure HTTPS access"
-}
-
 variable "host" {
   description = "(Required) https://www.terraform.io/docs/providers/kubernetes/r/ingress.html#host"
 }
