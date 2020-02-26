@@ -181,17 +181,13 @@ resource "kubernetes_service" "this" {
       name        = "http"
       port        = "80"
       target_port = var.web_port
-      node_port   = var.web_node_port
     }
 
     port {
       name        = "jnlp"
       port        = var.jnlp_port
       target_port = var.jnlp_port
-      node_port   = var.jnlp_node_port
     }
-
-    type = "NodePort"
   }
 }
 

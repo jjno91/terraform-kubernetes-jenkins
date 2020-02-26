@@ -52,13 +52,3 @@ variable "jnlp_port" {
   description = "(Optional) JNLP port used by Jenkins agents"
   default     = "50000"
 }
-
-variable "web_node_port" {
-  description = "(Optional) Jenkins web port internal to the Jenkins container"
-  default     = "30000"
-}
-
-variable "jnlp_node_port" {
-  description = "(Optional) JNLP port used by Jenkins agents"
-  default     = "30001"
-}
