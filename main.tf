@@ -199,6 +199,8 @@ resource "kubernetes_ingress" "this" {
     annotations = {
       "kubernetes.io/ingress.class"                    = "alb"
       "alb.ingress.kubernetes.io/scheme"               = "internet-facing"
+      "alb.ingress.kubernetes.io/tags"                 = var.tags
+      "alb.ingress.kubernetes.io/healthcheck-path"     = var.healthcheck_path
       "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
       "alb.ingress.kubernetes.io/actions.ssl-redirect" = "{\"Type\": \"redirect\", \"RedirectConfig\": { \"Protocol\": \"HTTPS\", \"Port\": \"443\", \"StatusCode\": \"HTTP_301\"}}"
     }
