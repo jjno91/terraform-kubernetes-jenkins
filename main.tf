@@ -180,13 +180,13 @@ resource "kubernetes_service" "this" {
     }
 
     port {
-      name        = "http"
-      port        = var.web_port
+      name = "http"
+      port = var.web_port
     }
 
     port {
-      name        = "jnlp"
-      port        = var.jnlp_port
+      name = "jnlp"
+      port = var.jnlp_port
     }
   }
 }
@@ -197,11 +197,11 @@ resource "kubernetes_ingress" "this" {
     namespace = kubernetes_namespace.this.metadata[0].name
 
     annotations = {
-      "kubernetes.io/ingress.class"                    = "alb"
-      "alb.ingress.kubernetes.io/scheme"               = "internet-facing"
-      "alb.ingress.kubernetes.io/tags"                 = var.tags
-      "alb.ingress.kubernetes.io/healthcheck-path"     = var.healthcheck_path
-      "alb.ingress.kubernetes.io/listen-ports"         = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
+      "kubernetes.io/ingress.class"                = "alb"
+      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
+      "alb.ingress.kubernetes.io/tags"             = var.tags
+      "alb.ingress.kubernetes.io/healthcheck-path" = var.healthcheck_path
+      "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
       "alb.ingress.kubernetes.io/actions.redirect" = "{\"Type\": \"redirect\", \"RedirectConfig\": { \"Protocol\": \"HTTPS\", \"Port\": \"443\", \"StatusCode\": \"HTTP_301\"}}"
     }
   }
@@ -218,6 +218,9 @@ resource "kubernetes_ingress" "this" {
             service_name = "redirect"
             service_port = "use-annotation"
           }
+        }
+        path {
+          path = "/*"
 
           backend {
             service_name = kubernetes_service.this.metadata[0].name
