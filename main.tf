@@ -174,21 +174,19 @@ resource "kubernetes_service" "this" {
 
   spec {
     type = "NodePort"
-    
+
     selector = {
       app = var.identifier
     }
 
     port {
       name        = "http"
-      port        = "80"
-      target_port = var.web_port
+      port        = var.web_port
     }
 
     port {
       name        = "jnlp"
       port        = var.jnlp_port
-      target_port = var.jnlp_port
     }
   }
 }
@@ -207,11 +205,6 @@ resource "kubernetes_ingress" "this" {
   }
 
   spec {
-    backend {
-      service_name = kubernetes_service.this.metadata[0].name
-      service_port = "80"
-    }
-
     rule {
       host = var.host
 
@@ -221,7 +214,7 @@ resource "kubernetes_ingress" "this" {
 
           backend {
             service_name = kubernetes_service.this.metadata[0].name
-            service_port = "80"
+            service_port = kubernetes_service.this.spec.port[0].port
           }
         }
       }
