@@ -214,7 +214,7 @@ resource "kubernetes_ingress" "this" {
 
           backend {
             service_name = kubernetes_service.this.metadata[0].name
-            service_port = kubernetes_service.this.spec.port[0].port
+            service_port = kubernetes_service.this.spec[0].port[0].port
           }
         }
       }
