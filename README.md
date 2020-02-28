@@ -5,15 +5,33 @@ Terraform module for deploying Jenkins on Kubernetes
 ## Usage
 
 ```terraform
-module "this" {
-  source              = "github.com/jjno91/terraform-kubernetes-jenkins?ref=master"
-  jenkins_volume_id   = "vol-abc123"
-  jenkins_volume_size = "50"
+module "jenkins" {
+  source                   = "StayWell/jenkins/kubernetes"
+  version                  = "0.4.0"
+  identifier               = "jenkins"
+  jenkins_volume_id        = module.ebs.volume_id
+  volume_availability_zone = data.aws_availability_zones.this.names[1]
+  jenkins_volume_size      = "100"
+  jenkins_version          = "2.176.2-jdk11"
+  host                     = "jenkins.mycompany.com"
+  tags                     = "Creator=Terraform,Environment=jenkins-dev,Owner=devops@mycompany.com,CostCenter=Jenkins"
+}
+
+data "aws_availability_zones" "this" {}
+
+module "ebs" {
+  source            = "StayWell/resilient-ebs/aws"
+  version           = "0.1.1"
+  env               = "jenkins-dev"
+  availability_zone = data.aws_availability_zones.this.names[1]
+  size              = "100"
 }
 ```
 
 ## Configuring Kubernetes Cloud
 
-Jenkins will be accessible inside the Kubernetes cluster from the DNS <identifier>.<identifier>.svc.cluster.local
-
-This DNS will need to be entered in the "Jenkins URL" config field for Kubernetes Cloud definition in order for K8S based JNLP agents to reach Jenkins
+1. Click: "Add a new cloud" > "Kubernetes"
+2. Kubernetes Namespace = jenkins
+3. Jenkins URL = <http://jenkins.jenkins.svc.cluster.local/>
+4. Concurrency Limit = 50
+5. Note that "Kubernetes URL" and Kubernetes "Credentials" should remain unset. This information is pulled from the Kubernetes service account Jenkins is running as. The service account can be tested by clicking "Test Connection".
