@@ -58,3 +58,8 @@ variable "healthcheck_path" {
   description = "(Optional) https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/#health-check"
   default     = "/login"
 }
+
+variable "certificate_arn" {
+  description = "(Optional) https://kubernetes-sigs.github.io/aws-alb-ingress-controller/guide/ingress/annotation/#ssl"
+  default     = ""
+}
