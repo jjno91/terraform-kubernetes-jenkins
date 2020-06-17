@@ -1,12 +1,12 @@
 resource "kubernetes_namespace" "this" {
   metadata {
-    name = var.identifier
+    name = var.id
   }
 }
 
 resource "kubernetes_service_account" "this" {
   metadata {
-    name      = var.identifier
+    name      = var.id
     namespace = kubernetes_namespace.this.metadata[0].name
   }
 
@@ -15,7 +15,7 @@ resource "kubernetes_service_account" "this" {
 
 resource "kubernetes_cluster_role_binding" "this" {
   metadata {
-    name = var.identifier
+    name = var.id
   }
 
   role_ref {
@@ -32,22 +32,9 @@ resource "kubernetes_cluster_role_binding" "this" {
   }
 }
 
-resource "kubernetes_storage_class" "this" {
-  metadata {
-    name = var.identifier
-  }
-
-  parameters = {
-    type = "gp2"
-  }
-
-  storage_provisioner = "kubernetes.io/aws-ebs"
-  reclaim_policy      = "Retain"
-}
-
 resource "kubernetes_persistent_volume" "this" {
   metadata {
-    name = var.identifier
+    name = var.id
   }
 
   spec {
@@ -61,14 +48,13 @@ resource "kubernetes_persistent_volume" "this" {
       }
     }
 
-    access_modes       = ["ReadWriteOnce"]
-    storage_class_name = kubernetes_storage_class.this.metadata[0].name
+    access_modes = ["ReadWriteOnce"]
   }
 }
 
 resource "kubernetes_persistent_volume_claim" "this" {
   metadata {
-    name      = var.identifier
+    name      = var.id
     namespace = kubernetes_namespace.this.metadata[0].name
   }
 
@@ -79,15 +65,14 @@ resource "kubernetes_persistent_volume_claim" "this" {
       }
     }
 
-    access_modes       = ["ReadWriteOnce"]
-    storage_class_name = kubernetes_storage_class.this.metadata[0].name
-    volume_name        = kubernetes_persistent_volume.this.metadata[0].name
+    access_modes = ["ReadWriteOnce"]
+    volume_name  = kubernetes_persistent_volume.this.metadata[0].name
   }
 }
 
 resource "kubernetes_deployment" "this" {
   metadata {
-    name      = var.identifier
+    name      = var.id
     namespace = kubernetes_namespace.this.metadata[0].name
   }
 
@@ -98,14 +83,14 @@ resource "kubernetes_deployment" "this" {
 
     selector {
       match_labels = {
-        app = var.identifier
+        app = var.id
       }
     }
 
     template {
       metadata {
         labels = {
-          app = var.identifier
+          app = var.id
         }
       }
 
@@ -144,10 +129,6 @@ resource "kubernetes_deployment" "this" {
           fs_group = "2000"
         }
 
-        node_selector = {
-          "failure-domain.beta.kubernetes.io/zone" = var.volume_availability_zone
-        }
-
         volume {
           persistent_volume_claim {
             claim_name = kubernetes_persistent_volume_claim.this.metadata[0].name
@@ -168,7 +149,7 @@ resource "kubernetes_deployment" "this" {
 
 resource "kubernetes_service" "this" {
   metadata {
-    name      = var.identifier
+    name      = var.id
     namespace = kubernetes_namespace.this.metadata[0].name
   }
 
@@ -176,7 +157,7 @@ resource "kubernetes_service" "this" {
     type = "NodePort"
 
     selector = {
-      app = var.identifier
+      app = var.id
     }
 
     port {
@@ -193,17 +174,11 @@ resource "kubernetes_service" "this" {
 
 resource "kubernetes_ingress" "this" {
   metadata {
-    name      = var.identifier
+    name      = var.id
     namespace = kubernetes_namespace.this.metadata[0].name
 
     annotations = {
-      "kubernetes.io/ingress.class"                = "alb"
-      "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
-      "alb.ingress.kubernetes.io/tags"             = var.tags
-      "alb.ingress.kubernetes.io/healthcheck-path" = var.healthcheck_path
-      "alb.ingress.kubernetes.io/certificate-arn"  = var.certificate_arn
-      "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\": 80}, {\"HTTPS\":443}]"
-      "alb.ingress.kubernetes.io/actions.redirect" = "{\"Type\": \"redirect\", \"RedirectConfig\": { \"Protocol\": \"HTTPS\", \"Port\": \"443\", \"StatusCode\": \"HTTP_301\"}}"
+      "kubernetes.io/ingress.class" = "nginx"
     }
   }
 
@@ -212,14 +187,6 @@ resource "kubernetes_ingress" "this" {
       host = var.host
 
       http {
-        path {
-          path = "/*"
-
-          backend {
-            service_name = "redirect"
-            service_port = "use-annotation"
-          }
-        }
         path {
           path = "/*"
 
