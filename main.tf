@@ -42,6 +42,14 @@ resource "kubernetes_persistent_volume" "this" {
       storage = "${var.jenkins_volume_size}Gi"
     }
 
+    persistent_volume_source {
+      local {
+        metadata {
+          name = var.id
+        }
+      }
+    }
+
     access_modes = ["ReadWriteOnce"]
   }
 }
