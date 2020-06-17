@@ -43,11 +43,7 @@ resource "kubernetes_persistent_volume" "this" {
     }
 
     persistent_volume_source {
-      local {
-        metadata {
-          name = var.id
-        }
-      }
+      local {}
     }
 
     access_modes = ["ReadWriteOnce"]
