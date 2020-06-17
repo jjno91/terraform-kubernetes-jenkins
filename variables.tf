@@ -1,5 +1,6 @@
 variable "host" {
   description = "(Optional) https://www.terraform.io/docs/providers/kubernetes/r/ingress.html#host"
+  default     = "jenkins.*"
 }
 
 variable "jenkins_volume_size" {
