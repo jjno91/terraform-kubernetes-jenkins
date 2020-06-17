@@ -42,12 +42,6 @@ resource "kubernetes_persistent_volume" "this" {
       storage = "${var.jenkins_volume_size}Gi"
     }
 
-    persistent_volume_source {
-      aws_elastic_block_store {
-        volume_id = var.jenkins_volume_id
-      }
-    }
-
     access_modes = ["ReadWriteOnce"]
   }
 }
