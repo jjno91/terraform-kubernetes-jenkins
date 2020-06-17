@@ -1,3 +1,12 @@
+variable "pvc_node" {
+  description = "(Optional) Hostname of the node that will house the Jenkins persistent volume"
+}
+
+variable "pvc_path" {
+  description = "(Optional) Path to the Jenkins persistent volume"
+  default = "/var/jenkins_home"
+}
+
 variable "host" {
   description = "(Optional) https://www.terraform.io/docs/providers/kubernetes/r/ingress.html#host"
   default     = "jenkins"

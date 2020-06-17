@@ -1,3 +1,4 @@
 module "this" {
-  source = "../"
+  source   = "../"
+  pvc_node = "blah"
 }

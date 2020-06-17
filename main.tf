@@ -43,7 +43,21 @@ resource "kubernetes_persistent_volume" "this" {
     }
 
     persistent_volume_source {
-      local {}
+      local {
+        path = var.pvc_path
+      }
+    }
+
+    node_affinity {
+      required {
+        node_selector_term {
+          match_expressions {
+            key      = "kubernetes.io/hostname"
+            operator = "In"
+            values   = [var.pvc_node]
+          }
+        }
+      }
     }
 
     access_modes = ["ReadWriteOnce"]
