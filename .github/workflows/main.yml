@@ -1,20 +1,23 @@
 name: Main
 on: [push]
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 jobs:
   main:
     runs-on: ubuntu-latest
-    container:
-      image: staywell/terraform:2.0.0
     steps:
       - uses: actions/checkout@v2
-      - name: Update Kubeconfig
-        run: aws eks update-kubeconfig --name eks-us-np --region us-west-2
-      - name: Terraform Init
+      - name: Start Kubernetes
+        run: minikube start
+      - name: Initialize
         run: terraform init test
-      - name: Terraform Validate
+      - name: Validate
         run: terraform validate test
-      - name: Terraform Plan
+      - name: Plan
         run: terraform plan test
+      - name: Apply
+        run: terraform apply test
+      - name: Apply Idempotency Check
+        run: terraform apply test
+      - name: Destroy
+        run: terraform apply test
+      - name: Destroy Idempotency Check
+        run: terraform apply test
