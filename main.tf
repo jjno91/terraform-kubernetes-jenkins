@@ -32,56 +32,6 @@ resource "kubernetes_cluster_role_binding" "this" {
   }
 }
 
-resource "kubernetes_persistent_volume" "this" {
-  metadata {
-    name = var.id
-  }
-
-  spec {
-    capacity = {
-      storage = "${var.jenkins_volume_size}Gi"
-    }
-
-    persistent_volume_source {
-      local {
-        path = var.pvc_path
-      }
-    }
-
-    node_affinity {
-      required {
-        node_selector_term {
-          match_expressions {
-            key      = "kubernetes.io/hostname"
-            operator = "In"
-            values   = [var.pvc_node]
-          }
-        }
-      }
-    }
-
-    access_modes = ["ReadWriteOnce"]
-  }
-}
-
-resource "kubernetes_persistent_volume_claim" "this" {
-  metadata {
-    name      = var.id
-    namespace = kubernetes_namespace.this.metadata[0].name
-  }
-
-  spec {
-    resources {
-      requests = {
-        storage = "${var.jenkins_volume_size}Gi"
-      }
-    }
-
-    access_modes = ["ReadWriteOnce"]
-    volume_name  = kubernetes_persistent_volume.this.metadata[0].name
-  }
-}
-
 resource "kubernetes_deployment" "this" {
   metadata {
     name      = var.id
@@ -143,7 +93,7 @@ resource "kubernetes_deployment" "this" {
 
         volume {
           persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.this.metadata[0].name
+            claim_name = var.claim_name
           }
 
           name = "jenkins-home"
