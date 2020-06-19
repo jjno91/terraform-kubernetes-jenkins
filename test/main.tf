@@ -6,7 +6,7 @@ module "this" {
 
 resource "kubernetes_persistent_volume" "this" {
   metadata {
-    name = "this"
+    name = "jenkins"
   }
 
   spec {
@@ -38,7 +38,7 @@ resource "kubernetes_persistent_volume" "this" {
 
 resource "kubernetes_storage_class" "this" {
   metadata {
-    name = "local"
+    name = "jenkins"
   }
 
   storage_provisioner = "kubernetes.io/no-provisioner"
