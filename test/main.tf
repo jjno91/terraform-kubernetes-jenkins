@@ -1,7 +1,8 @@
 module "this" {
-  source     = "../"
-  id         = "this"
-  claim_name = kubernetes_persistent_volume_claim.this.metadata[0].name
+  source             = "../"
+  id                 = "this"
+  volume_name        = kubernetes_persistent_volume.this.metadata[0].name
+  storage_class_name = kubernetes_persistent_volume.this.spec[0].storage_class_name
 }
 
 resource "kubernetes_persistent_volume" "this" {
@@ -33,26 +34,7 @@ resource "kubernetes_persistent_volume" "this" {
     }
 
     storage_class_name = kubernetes_storage_class.this.metadata[0].name
-    access_modes       = ["ReadWriteOnce"]
-  }
-}
-
-resource "kubernetes_persistent_volume_claim" "this" {
-  metadata {
-    name      = "this"
-    namespace = "this"
-  }
-
-  spec {
-    resources {
-      requests = {
-        storage = "5Gi"
-      }
-    }
-
-    storage_class_name = kubernetes_storage_class.this.metadata[0].name
-    access_modes       = ["ReadWriteOnce"]
-    volume_name        = kubernetes_persistent_volume.this.metadata[0].name
+    access_modes = ["ReadWriteOnce"]
   }
 }
 

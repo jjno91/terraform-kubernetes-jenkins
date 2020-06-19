@@ -4,15 +4,6 @@ resource "kubernetes_namespace" "this" {
   }
 }
 
-resource "kubernetes_service_account" "this" {
-  metadata {
-    name      = var.id
-    namespace = kubernetes_namespace.this.metadata[0].name
-  }
-
-  automount_service_account_token = true
-}
-
 resource "kubernetes_cluster_role_binding" "this" {
   metadata {
     name = var.id
@@ -32,13 +23,25 @@ resource "kubernetes_cluster_role_binding" "this" {
   }
 }
 
+resource "kubernetes_service_account" "this" {
+  metadata {
+    name      = "this"
+    namespace = kubernetes_namespace.this.metadata[0].name
+  }
+
+  automount_service_account_token = true
+}
+
 resource "kubernetes_deployment" "this" {
   metadata {
-    name      = var.id
+    name      = "this"
     namespace = kubernetes_namespace.this.metadata[0].name
   }
 
   spec {
+    replicas               = 1
+    revision_history_limit = 5
+
     strategy {
       type = "Recreate"
     }
@@ -57,14 +60,17 @@ resource "kubernetes_deployment" "this" {
       }
 
       spec {
+        service_account_name            = kubernetes_service_account.this.metadata[0].name
+        automount_service_account_token = true
+
         container {
-          name  = "jenkins"
-          image = "jenkins/jenkins:${var.jenkins_version}"
+          name  = "this"
+          image = var.image
 
           resources {
             requests {
-              cpu    = var.cpu_request
-              memory = var.memory_request
+              cpu    = var.cpu
+              memory = var.memory
             }
           }
 
@@ -82,7 +88,7 @@ resource "kubernetes_deployment" "this" {
           }
 
           volume_mount {
-            name       = "jenkins-home"
+            name       = "home"
             mount_path = "/var/jenkins_home"
           }
         }
@@ -92,26 +98,20 @@ resource "kubernetes_deployment" "this" {
         }
 
         volume {
+          name = "home"
+
           persistent_volume_claim {
-            claim_name = var.claim_name
+            claim_name = kubernetes_persistent_volume_claim.this.metadata[0].name
           }
-
-          name = "jenkins-home"
         }
-
-        service_account_name            = kubernetes_service_account.this.metadata[0].name
-        automount_service_account_token = true
       }
     }
-
-    replicas               = 1
-    revision_history_limit = 5
   }
 }
 
 resource "kubernetes_service" "this" {
   metadata {
-    name      = var.id
+    name      = "this"
     namespace = kubernetes_namespace.this.metadata[0].name
   }
 
@@ -136,7 +136,7 @@ resource "kubernetes_service" "this" {
 
 resource "kubernetes_ingress" "this" {
   metadata {
-    name      = var.id
+    name      = "this"
     namespace = kubernetes_namespace.this.metadata[0].name
 
     annotations = {
@@ -157,6 +157,25 @@ resource "kubernetes_ingress" "this" {
             service_port = kubernetes_service.this.spec[0].port[0].port
           }
         }
+      }
+    }
+  }
+}
+
+resource "kubernetes_persistent_volume_claim" "this" {
+  metadata {
+    name      = "this"
+    namespace = kubernetes_namespace.this.metadata[0].name
+  }
+
+  spec {
+    access_modes       = ["ReadWriteOnce"]
+    volume_name        = var.volume_name
+    storage_class_name = var.storage_class_name
+
+    resources {
+      requests = {
+        storage = var.storage
       }
     }
   }

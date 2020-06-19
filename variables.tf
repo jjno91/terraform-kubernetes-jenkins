@@ -1,5 +1,10 @@
-variable "claim_name" {
-  description = "https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#claim_name"
+variable "volume_name" {
+  description = "https://www.terraform.io/docs/providers/kubernetes/r/persistent_volume_claim.html#volume_name"
+}
+
+variable "storage_class_name" {
+  description = "https://www.terraform.io/docs/providers/kubernetes/r/persistent_volume_claim.html#storage_class_name"
+  default     = ""
 }
 
 variable "host" {
@@ -7,29 +12,29 @@ variable "host" {
   default     = "jenkins"
 }
 
-variable "cpu_request" {
-  description = "https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#cpu - matches m5.2xlarge resources"
+variable "cpu" {
+  description = "https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#cpu"
   default     = "500m"
 }
 
-variable "memory_request" {
-  description = "https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#memory - matches m5.2xlarge resources"
+variable "memory" {
+  description = "https://www.terraform.io/docs/providers/kubernetes/r/deployment.html#memory"
   default     = "1Gi"
 }
 
-variable "jenkins_version" {
+variable "storage" {
+  description = "https://www.terraform.io/docs/providers/kubernetes/r/persistent_volume_claim.html#requests"
+  default     = "5Gi"
+}
+
+variable "image" {
   description = "https://hub.docker.com/r/jenkins/jenkins/tags"
-  default     = "latest"
+  default     = "jenkins/jenkins:latest"
 }
 
 variable "id" {
   description = "Used to generate namespace and name resources"
   default     = "jenkins"
-}
-
-variable "labels" {
-  description = "Additional labels applied to all resources"
-  default     = []
 }
 
 variable "web_port" {
