@@ -1,0 +1,23 @@
+name: Main
+on: [push]
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start Kubernetes
+        run: minikube start
+      - name: Initialize
+        run: terraform init test
+      - name: Validate
+        run: terraform validate test
+      - name: Lint
+        run: terraform fmt -recursive -check
+      - name: Apply
+        run: terraform apply -auto-approve test
+      - name: Apply Idempotency Check
+        run: terraform plan -detailed-exitcode test
+      - name: Destroy
+        run: terraform destroy -auto-approve test
+      - name: Destroy Idempotency Check
+        run: terraform plan -detailed-exitcode -destroy test
