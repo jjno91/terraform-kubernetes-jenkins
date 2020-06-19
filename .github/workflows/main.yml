@@ -18,4 +18,4 @@ jobs:
       - name: Destroy
         run: terraform destroy -auto-approve test
       - name: Destroy Idempotency Check
-        run: terraform plan -destroy -detailed-exitcode test
+        run: terraform plan -detailed-exitcode -destroy test
