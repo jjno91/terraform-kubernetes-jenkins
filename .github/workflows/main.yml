@@ -12,10 +12,10 @@ jobs:
       - name: Validate
         run: terraform validate test
       - name: Apply
-        run: terraform apply test -auto-approve
+        run: terraform apply -auto-approve test
       - name: Apply Idempotency Check
-        run: terraform plan test -detailed-exitcode
+        run: terraform plan -detailed-exitcode test
       - name: Destroy
-        run: terraform destroy test -auto-approve
+        run: terraform destroy -auto-approve test
       - name: Destroy Idempotency Check
-        run: terraform plan test -destroy -detailed-exitcode
+        run: terraform plan -destroy -detailed-exitcode test
