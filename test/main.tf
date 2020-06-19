@@ -1,6 +1,5 @@
 module "this" {
   source             = "../"
-  id                 = "this"
   volume_name        = kubernetes_persistent_volume.this.metadata[0].name
   storage_class_name = kubernetes_persistent_volume.this.spec[0].storage_class_name
 }
@@ -26,15 +25,14 @@ resource "kubernetes_persistent_volume" "this" {
         node_selector_term {
           match_expressions {
             key      = "kubernetes.io/hostname"
-            operator = "In"
-            values   = ["*"]
+            operator = "Exists"
           }
         }
       }
     }
 
     storage_class_name = kubernetes_storage_class.this.metadata[0].name
-    access_modes = ["ReadWriteOnce"]
+    access_modes       = ["ReadWriteOnce"]
   }
 }
 
